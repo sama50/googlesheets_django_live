@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .main{
+            display: flex;
+            flex-direction:column;
+            align-items: center;
+            justify-content: center;
+            padding:2rem;
+            background-color: #f5f5f5;
+        }
+        textarea {
+            background-color: #ffff;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 16px;
+            padding: 20px;
+            line-height: 1.5;
+            border: none;
+            resize: none;
+        }
+        @media (max-width: 768px) {
+          textarea {
+            height: 100px;
+          }
+        }
+        
+        @media (max-width: 360) {
+          textarea {
+            height: 50px;
+          }
+        }
+          textarea:focus {
+            outline: none;
+          }
+          .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+            height: 56px;
+            padding: 0 16px;
+          }
+          
+          .navbar__left {
+            display: flex;
+            align-items: center;
+          }
+          
+          .navbar__logo {
+            height: 24px;
+            margin-right: 16px;
+          }
+          
+          .navbar__menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+          }
+          
+          .navbar__menu li {
+            margin-right: 16px;
+          }
+          
+          .navbar__menu li:last-child {
+            margin-right: 0;
+          }
+          
+          .navbar__menu a {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 24px;
+            font-weight: 500;
+          }
+          
+          .navbar__menu a:hover {
+            text-decoration: underline;
+          }
+          
+          .navbar__right {
+            display: flex;
+            align-items: center;
+          }
+          
+          .navbar__button {
+            background-color: #f1f3f4;
+            border: none;
+            color: #202124;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 36px;
+            padding: 0 16px;
+            margin-left: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+          }
+          
+          .navbar__button:hover {
+            background-color: #e0e0e0;
+          }
+          .popup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            z-index: 9999;
+            height: 20vh;
+            width: 20%;
+          }
+          
+          .popup button {
+            margin-top: 10px;
+          }
+          
+          
+    </style>
+    <title>Google Sheet</title>
+</head>
+<body>
+    
+
+    <div id="url-popup" class="popup">
+        <span id="url-text"></span>
+        <button id="close-btn">Close</button>
+    </div>
+
+    <div class="googlenav">
+        <nav class="navbar">
+            <div class="navbar__left">
+              <img class="navbar__logo" src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png" alt="Google logo">
+              <ul class="navbar__menu">
+                <li><a href="#">File</a></li>
+                <li><a href="#">Edit</a></li>
+                <li><a href="#">View</a></li>
+                <li><a href="#">Insert</a></li>
+                <li><a href="#">Format</a></li>
+                <li><a href="#">Tools</a></li>
+                <li><a href="#">Help</a></li>
+              </ul>
+            </div>
+            <div class="navbar__right">
+              <button class="navbar__button" id="url-btn">Share</button>
+              <button class="navbar__button">New</button>
+              <button class="navbar__button" onclick="printTextarea()">Print</button>
+            </div>
+          </nav>
+          
+        </div>
+        <div class="main">
+         
+        <textarea name="fileinput" id="fileinput" cols="90" rows="90" value=""></textarea>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script>
+         
+        $('#fileinput').keyup(function() {
+            
+           chatSocket.send(document.getElementById("fileinput").value)
+        });
+
+
+
+
+        function printTextarea() {
+            var textarea = document.getElementById("fileinput");
+            var printWindow = window.open('', '', 'height=500,width=500');
+            printWindow.document.write('<html><head><title>Print Textarea</title>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(textarea.value.replace(/\n/gi, '<br>'));
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+          }
+          
+
+
+
+            const urlBtn = document.getElementById("url-btn");
+            const urlPopup = document.getElementById("url-popup");
+            const urlText = document.getElementById("url-text");
+            const closeBtn = document.getElementById("close-btn");
+
+            urlBtn.addEventListener("click", () => {
+                urlText.textContent = window.location.href;
+                urlPopup.style.display = "block";
+            });
+
+            closeBtn.addEventListener("click", () => {
+            urlPopup.style.display = "none";
+            });
+          url_room = "{{idurl}}"
+          
+          const chatSocket = new WebSocket(`ws://127.0.0.1:8000/ws/wsc/${url_room}/`);
+           
+          chatSocket.onmessage = function(e) {
+            var textarea = document.getElementById("fileinput");
+          
+             textarea.value = e.data
+          }
+
+
+    </script>
+</body>
+
+</html>
